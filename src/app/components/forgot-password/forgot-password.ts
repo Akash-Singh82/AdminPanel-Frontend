@@ -52,6 +52,7 @@ onPasteEmail(event: ClipboardEvent) {
     this.message = undefined;
 
     if (this.form.invalid) {
+      this.toastService.show("Invalid form. Please correct the errors.");
       this.form.markAllAsTouched();
       return;
     }
