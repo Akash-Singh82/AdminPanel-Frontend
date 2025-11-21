@@ -1,0 +1,18 @@
+.dialog-content {
+  background-color: #f44336; /* red */
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+  z-index: 9999;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,203 @@
+<div >
+  <!-- Loading overlay -->
+  <div *ngIf="loading" class="absolute inset-0 z-40 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="bg-white/80 p-6 rounded-lg shadow-lg flex flex-col items-center gap-3">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <div class="text-gray-700 font-medium">Loading…</div>
+    </div>
+  </div>
+
+  <div class="card p-4 bg-white shadow rounded-lg border border-gray-200">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">Roles</h2>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition cursor-pointer"
+                (click)="onAdd()" *hasPermission="'Roles.Add'">
+          + Add Role
+        </button>
+        <button class="px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-200 transition cursor-pointer"
+                (click)="exportCsv()" *hasPermission="'Roles.List'">
+          Export CSV
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-4 border p-3 rounded-lg bg-gray-50">
+      <form [formGroup]="filtersForm" class="w-full" (ngSubmit)="onSearch()" (keydown.enter)="$event.preventDefault(); onSearch()" novalidate>
+        <table class="w-full border border-gray-200 rounded-lg">
+<thead class="bg-gray-100 text-gray-700">
+  <tr class="border-b border-gray-200">
+    <!-- Name -->
+    <th class="p-2 cursor-pointer group select-none" (click)="sortBy('name')">
+      <div class="flex items-center gap-1">
+        <span>Name</span>
+
+        <!-- Active sort icon -->
+        <ng-container *ngIf="sortField === 'name'">
+          <span *ngIf="sortDirection === 'asc'">▲</span>
+          <span *ngIf="sortDirection === 'desc'">▼</span>
+        </ng-container>
+
+        <!-- Hover-only icon -->
+        <span *ngIf="sortField !== 'name'"
+          class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+          ▲
+        </span>
+      </div>
+    </th>
+
+    <!-- Description -->
+    <th class="p-2 cursor-pointer group select-none" (click)="sortBy('description')">
+      <div class="flex items-center gap-1">
+        <span>Description</span>
+
+        <ng-container *ngIf="sortField === 'description'">
+          <span *ngIf="sortDirection === 'asc'">▲</span>
+          <span *ngIf="sortDirection === 'desc'">▼</span>
+        </ng-container>
+
+        <span *ngIf="sortField !== 'description'"
+          class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+          ▲
+        </span>
+      </div>
+    </th>
+
+    <!-- Status -->
+    <th class="p-2 cursor-pointer group select-none" (click)="sortBy('isActive')">
+      <div class="flex items-center gap-1">
+        <span>Status</span>
+
+        <ng-container *ngIf="sortField === 'isActive'">
+          <span *ngIf="sortDirection === 'asc'">▲</span>
+          <span *ngIf="sortDirection === 'desc'">▼</span>
+        </ng-container>
+
+        <span *ngIf="sortField !== 'isActive'"
+          class="opacity-0 group-hover:opacity-50 text-gray-400 text-xs transition-opacity">
+          ▲
+        </span>
+      </div>
+    </th>
+
+    <th class="p-2">Actions</th>
+  </tr>
+
+
+            <!-- Filters -->
+            <tr class="border-b border-gray-200 bg-white">
+              <th class="p-2">
+                <input type="text" placeholder="Search Name" formControlName="name"
+                maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'name')"
+  (paste)="onNamePaste($event, 'name')"
+                       class="w-full border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500" />
+              </th>
+              <th class="p-2">
+                <input type="text" placeholder="Search Description" formControlName="description"
+                maxlength="40"
+  (keydown)="preventInvalidNameInput($event, 'description')"
+  (paste)="onNamePaste($event, 'description')"
+                       class="w-full border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500" />
+              </th>
+              <th class="p-2">
+                <select formControlName="isActive"
+                        class="w-full border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500">
+                  <option [ngValue]="null">All</option>
+                  <option [ngValue]="true">Active</option>
+                  <option [ngValue]="false">Inactive</option>
+                </select>
+              </th>
+              <th class="p-2">
+                <button type="button"
+                        class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 transition cursor-pointer"
+                        (click)="clearFilters()">
+                  Clear
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let role of paged?.items"
+                class="border-b border-gray-200 hover:bg-gray-50 transition">
+              <td class="p-2">{{ role.name }}</td>
+              <td class="p-2">{{ role.description }}</td>
+              <td class="p-2">
+                <label class="switch">
+                  <input type="checkbox" [checked]="role.isActive" (change)="toggleStatus(role)" />
+                  <span class="slider round"></span>
+                </label>
+              </td>
+             <td class="p-2 flex gap-2">
+  <!-- Hide edit/delete buttons for SuperAdmin -->
+  <ng-container *ngIf="role.name !== 'SuperAdmin'">
+    <button class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm cursor-pointer"
+            (click)="onEdit(role.id)" *hasPermission="'Roles.Edit'">Edit</button>
+    <button class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm cursor-pointer"
+            (click)="delete(role)" *hasPermission="'Roles.Delete'">Delete</button>
+  </ng-container>
+
+  <!-- Optional: show disabled label instead -->
+  <ng-container *ngIf="role.name === 'SuperAdmin'">
+    <span class="text-gray-500 italic text-sm">Locked</span>
+  </ng-container>
+</td>
+
+            </tr>
+            <tr *ngIf="!paged?.items?.length">
+              <td colspan="4" class="text-center text-gray-500 py-3">No roles found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+
+    <!-- Pagination -->
+ <div class="flex flex-wrap items-center justify-between mt-4 gap-3 text-gray-700">
+
+  <!-- LEFT SIDE -->
+  <div class="flex items-center gap-2">
+    <button [disabled]="pageNumber <= 1"
+            (click)="pageChanged(pageNumber - 1)"
+            class="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 
+                   disabled:bg-gray-200 disabled:cursor-not-allowed transition cursor-pointer">
+      ◀ Prev
+    </button>
+
+    <span class="text-gray-700">
+      Page <strong>{{ pageNumber }}</strong> of <strong>{{ TotalPages }}</strong>
+    </span>
+
+    <button [disabled]="(pageNumber * pageSize) >= (paged?.totalCount ?? 0)"
+            (click)="pageChanged(pageNumber + 1)"
+            class="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 
+                   disabled:bg-gray-200 disabled:cursor-not-allowed transition cursor-pointer">
+      Next ▶
+    </button>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="flex items-center gap-3">
+    <label class="text-sm text-gray-600">Rows per page:</label>
+
+    <select [value]="pageSize"
+            (change)="onPageSizeChange($any($event.target).value)"
+            class="border border-gray-300 rounded px-2 py-1 bg-white focus:ring-1 focus:ring-indigo-500">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="25">25</option>
+      <option [value]="50">50</option>
+    </select>
+
+    <span class="text-gray-600">
+      Total: <strong>{{ paged?.totalCount ?? 0 }}</strong>
+    </span>
+  </div>
+
+</div>
+
+</div>

@@ -1,0 +1,38 @@
+<div class="space-y-4">
+  <!-- top stat cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="card flex items-center gap-4 border border-gray-200">
+      <div class="flex items-center justify-center w-16 h-16 bg-emerald-600 text-white rounded">
+        <!-- user icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a3 3 0 110 6 3 3 0 010-6z"/><path d="M2 17a6 6 0 1116 0H2z"/></svg>
+      </div>
+      <div class="flex-1">
+        <div class="text-sm text-gray-500">TOTAL USERS</div>
+        <div class="text-2xl font-semibold">{{ totalUsers }}</div>
+      </div>
+    </div>
+
+    <div class="card flex items-center gap-4 border border-gray-200">
+      <div class="flex items-center justify-center w-16 h-16 bg-yellow-400 text-black rounded">
+        <!-- roles icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a2 2 0 012 2v1h2a1 1 0 01.8 1.6L12.6 11H7.4L4.2 6.6A1 1 0 015 5h2V4a2 2 0 012-2z"/><path d="M2 13a2 2 0 012-2h12a2 2 0 012 2v1H2v-1z"/></svg>
+      </div>
+      <div class="flex-1">
+        <div class="text-sm text-gray-500">TOTAL ROLES</div>
+        <div class="text-2xl font-semibold">{{ totalRoles }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- divider -->
+  <div class="border-t"></div>
+
+  <!-- charts area (placeholder) -->
+  <div class="card">
+    <div class="text-gray-500 text-sm mb-3">Overview</div>
+    <!-- placeholder box where chart would appear -->
+    <div class="h-64 bg-gray-50 border rounded flex items-center justify-center text-gray-400">
+      Charts go here — left as placeholder
+    </div>
+  </div>
+</div>

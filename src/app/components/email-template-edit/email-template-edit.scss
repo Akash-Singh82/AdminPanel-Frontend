@@ -1,0 +1,15 @@
+// :host ::ng-deep .ck-editor__editable_inline {
+//   @apply whitespace-pre-wrap break-words box-border w-[800px] h-[200px] overflow-auto;
+// }
+:host ::ng-deep .ck-editor {
+  @apply w-full;
+}
+
+// :host ::ng-deep .ck-editor__editable_inline {
+//   @apply whitespace-pre-wrap break-words box-border w-full h-[200px] overflow-auto;
+// }
+
+
+:host ::ng-deep .ck-editor__editable_inline {
+  @apply whitespace-pre-wrap break-words min-w-full h-[150px] box-border  ;
+}

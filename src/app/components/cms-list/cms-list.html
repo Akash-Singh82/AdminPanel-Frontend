@@ -1,0 +1,221 @@
+<div >
+  <!-- Loading overlay -->
+  <div *ngIf="loading" class="absolute inset-0 z-40 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="bg-white/80 p-6 rounded-lg shadow-lg flex flex-col items-center gap-3">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <div class="text-gray-700 font-medium">Loading…</div>
+    </div>
+  </div>
+
+<div class="card p-4 bg-white shadow rounded-lg border border-gray-200">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-semibold text-gray-800">CMS Pages</h2>
+    <div class="flex gap-2">
+      <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition cursor-pointer" (click)="onAdd()"
+        *hasPermission="'CMS.Add'">
+        + Add CMS
+      </button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-200 transition cursor-pointer"
+        (click)="exportCsv()" *hasPermission="'CMS.List'">
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters and Table -->
+  <div class="mb-4 border p-3 rounded-lg bg-gray-50">
+    <form [formGroup]="searchForm"  (keydown.enter)="$event.preventDefault(); onSearch()" novalidate class="w-full">
+      <table class="w-full border border-gray-200 rounded-lg">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr class="border-b border-gray-200">
+
+                          <th class="p-2 cursor-pointer group select-none" (click)="sortBy('key')">
+                <div class="flex items-center gap-1">
+                  <span>Key</span>
+
+                  <ng-container *ngIf="sortField === 'key'">
+                    <span *ngIf="sortDirection === 'asc'">▲</span>
+                    <span *ngIf="sortDirection === 'desc'">▼</span>
+                  </ng-container>
+
+                  <span *ngIf="sortField !== 'key'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+                          <th class="p-2 cursor-pointer group select-none" (click)="sortBy('title')">
+                <div class="flex items-center gap-1">
+                  <span>Title</span>
+
+                  <ng-container *ngIf="sortField === 'title'">
+                    <span *ngIf="sortDirection === 'asc'">▲</span>
+                    <span *ngIf="sortDirection === 'desc'">▼</span>
+                  </ng-container>
+
+                  <span *ngIf="sortField !== 'title'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+                          <th class="p-2 cursor-pointer group select-none" (click)="sortBy('metaKeyword')">
+                <div class="flex items-center gap-1">
+                  <span>MetaKeyword</span>
+
+                  <ng-container *ngIf="sortField === 'metaKeyword'">
+                    <span *ngIf="sortDirection === 'asc'">▲</span>
+                    <span *ngIf="sortDirection === 'desc'">▼</span>
+                  </ng-container>
+
+                  <span *ngIf="sortField !== 'metaKeyword'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('isActive')">
+                <div class="flex items-center gap-1">
+                  <span>Status</span>
+
+                  <ng-container *ngIf="sortField === 'isActive'">
+                    <span *ngIf="sortDirection === 'asc'">▲</span>
+                    <span *ngIf="sortDirection === 'desc'">▼</span>
+                  </ng-container>
+
+                  <span *ngIf="sortField !== 'isActive'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+            <th class="p-2">Actions</th>
+          </tr>
+
+
+          <!-- ✅ Filter Row -->
+          <tr class="border-b border-gray-200 bg-white">
+            <th class="p-2">
+              <input type="text" placeholder="Search Key" formControlName="key" maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'key')"
+  (paste)="onNamePaste($event, 'key')"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </th>
+            <th class="p-2">
+              <input type="text" placeholder="Search Title" formControlName="title"
+               maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'title')"
+  (paste)="onNamePaste($event, 'title')"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </th>
+            <th class="p-2">
+              <input type="text" placeholder="Search Meta Keyword" formControlName="metaKeyword"
+               maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'metaKeyword')"
+  (paste)="onNamePaste($event, 'metaKeyword')"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </th>
+            <th class="p-2">
+              <select formControlName="isActive"
+                class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option [ngValue]="null">All</option>
+                <option [ngValue]="true">Active</option>
+                <option [ngValue]="false">Inactive</option>
+              </select>
+            </th>
+            <th class="p-2">
+              <button type="button" class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 transition cursor-pointer"
+                (click)="clearFilters()">
+                Clear
+              </button>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cms of cmsList" class="border-b border-gray-200 hover:bg-gray-50 transition">
+            <td class="p-2">{{ cms.key }}</td>
+            <td class="p-2">{{ cms.title }}</td>
+            <td class="p-2">{{ cms.metaKeyword }}</td>
+            <td class="p-2">
+              <label class="switch">
+                <input type="checkbox" [checked]="cms.isActive" (change)="toggleStatus(cms)" />
+                <span class="slider round"></span>
+              </label>
+            </td>
+            <td class="p-2 flex gap-2">
+              <button class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm cursor-pointer"
+                (click)="onEdit(cms.id)" *hasPermission="'CMS.Edit'">
+                Edit
+              </button>
+              <button class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm cursor-pointer"
+                (click)="delete(cms)" *hasPermission="'CMS.Delete'">
+                Delete
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="cmsList.length === 0">
+            <td colspan="5" class="text-center text-gray-500 py-3">
+              No CMS pages found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+
+  <!-- ✅ Pagination -->
+  <div class="flex flex-wrap items-center justify-between mt-4 gap-3 text-gray-700">
+
+  <!-- LEFT SIDE -->
+  <div class="flex items-center gap-2">
+    <button [disabled]="pageNumber <= 1"
+      (click)="pageChanged(pageNumber - 1)"
+      class="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 
+             disabled:bg-gray-200 disabled:cursor-not-allowed transition cursor-pointer">
+      ◀ Prev
+    </button>
+
+    <span class="text-gray-700">
+      Page <strong>{{ pageNumber }}</strong> of <strong>{{ TotalPages }}</strong>
+    </span>
+
+    <button [disabled]="(pageNumber * pageSize) >= totalCount"
+      (click)="pageChanged(pageNumber + 1)"
+      class="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-100 
+             disabled:bg-gray-200 disabled:cursor-not-allowed transition cursor-pointer">
+      Next ▶
+    </button>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="flex items-center gap-3">
+    <label class="text-sm text-gray-600">Rows per page:</label>
+
+    <select [value]="pageSize"
+      (change)="pageSize = +$any($event.target).value; loadData()"
+      class="border border-gray-300 rounded px-2 py-1 bg-white focus:ring-1 focus:ring-indigo-500">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="25">25</option>
+      <option [value]="50">50</option>
+    </select>
+
+    <span class="text-gray-600">
+      Total: <strong>{{ totalCount }}</strong>
+    </span>
+  </div>
+
+</div>
+
+</div>
+</div>

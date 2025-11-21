@@ -1,0 +1,308 @@
+<div class="">
+  <!-- blur overlay shown when loading -->
+  <div *ngIf="loading" class="absolute inset-0 z-40 flex items-center justify-center"
+    style="backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);" aria-hidden="true">
+    <div class="bg-white/80 p-6 rounded-lg shadow-lg flex flex-col items-center gap-3">
+      <div class="loader" aria-hidden="true">
+        <!-- simple CSS spinner (style at bottom or in global CSS) -->
+        <svg class="animate-spin h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+      </div>
+      <div class="text-gray-700 font-medium">Loading…</div>
+    </div>
+  </div>
+
+  <div class="card p-4 bg-white shadow rounded-lg border border-gray-200">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">Users</h2>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition cursor-pointer" (click)="addUser()"
+          *hasPermission="'Users.Add'">
+          + Add User
+        </button>
+        <button
+          class="px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-200 transition cursor-pointer"
+          (click)="exportCsv()" *hasPermission="'Users.List'">
+          Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters + Table -->
+    <div class="mb-4 border p-3 rounded-lg bg-gray-50">
+      <form [formGroup]="filtersForm" (ngSubmit)="$event.preventDefault()" (keydown.enter)="onEnterPress($event)"
+        class="w-full">
+        <table class="w-full border border-gray-200 rounded-lg">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr class="border-b border-gray-200">
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('name')">
+                <div class="flex items-center gap-1">
+                  <span>Name</span>
+
+                  <!-- Active sort icon -->
+                  <ng-container *ngIf="sortField === 'name'">
+                    <span *ngIf="sortDir === 'asc'">▲</span>
+                    <span *ngIf="sortDir === 'desc'">▼</span>
+                  </ng-container>
+
+                  <!-- Hover-only icon (light gray) -->
+                  <span *ngIf="sortField !== 'name'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('email')">
+                <div class="flex items-center gap-1">
+                  <span>Email</span>
+
+                  <!-- Active sort icon -->
+                  <ng-container *ngIf="sortField === 'email'">
+                    <span *ngIf="sortDir === 'asc'">▲</span>
+                    <span *ngIf="sortDir === 'desc'">▼</span>
+                  </ng-container>
+
+                  <!-- Hover-only icon (light gray) -->
+                  <span *ngIf="sortField !== 'email'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('phone')">
+                <div class="flex items-center gap-1">
+                  <span>Phone</span>
+
+                  <!-- Active sort icon -->
+                  <ng-container *ngIf="sortField === 'phone'">
+                    <span *ngIf="sortDir === 'asc'">▲</span>
+                    <span *ngIf="sortDir === 'desc'">▼</span>
+                  </ng-container>
+
+                  <!-- Hover-only icon (light gray) -->
+                  <span *ngIf="sortField !== 'phone'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('role')">
+                <div class="flex items-center gap-1">
+                  <span>Role</span>
+
+                  <!-- Active sort icon -->
+                  <ng-container *ngIf="sortField === 'role'">
+                    <span *ngIf="sortDir === 'asc'">▲</span>
+                    <span *ngIf="sortDir === 'desc'">▼</span>
+                  </ng-container>
+
+                  <!-- Hover-only icon (light gray) -->
+                  <span *ngIf="sortField !== 'role'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+              <th class="p-2 cursor-pointer group select-none" (click)="sortBy('isActive')">
+                <div class="flex items-center gap-1">
+                  <span>Status</span>
+
+                  <!-- Active sort icon -->
+                  <ng-container *ngIf="sortField === 'isActive'">
+                    <span *ngIf="sortDir === 'asc'">▲</span>
+                    <span *ngIf="sortDir === 'desc'">▼</span>
+                  </ng-container>
+
+                  <!-- Hover-only icon (light color, appears on hover only) -->
+                  <span *ngIf="sortField !== 'isActive'"
+                    class="opacity-0 group-hover:opacity-50 text-gray-400 text-xs transition-opacity">
+                    ▲
+                  </span>
+                </div>
+              </th>
+
+
+              <th class="p-2">Actions</th>
+            </tr>
+
+            <!-- filter inputs row -->
+            <tr class="border-b border-gray-200 bg-white">
+              <th class="p-2">
+                <input type="text" placeholder="Search Name" formControlName="name" (keydown)="onEnterPress($event)"
+                maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'name')"
+  (paste)="onNamePaste($event, 'name')"
+                  class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+              </th>
+
+              <th class="p-2">
+                <input type="text" placeholder="Search Email" formControlName="email" (keydown)="onEnterPress($event)"
+                 maxlength="50"
+          (keydown)="preventSpaceInEmail_($event)"
+  (paste)="onPasteEmail_($event)"
+                  class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+              </th>
+
+              <th class="p-2">
+                <input type="text" placeholder="Search Phone" formControlName="phone" maxlength="18"
+                  (keypress)="allowPhoneCharacters($event)" (paste)="validatePhonePaste($event)"
+                  (keydown.enter)="onEnterPress($event)"
+                  
+                  class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+              </th>
+
+              <!-- Searchable role input with datalist to enable "sumo-like" quick search.
+                   The value must match predefined role name to set roleId. -->
+              <th class="p-2">
+
+                <!-- Wrap input + dropdown together -->
+                <div class="relative role-dropdown-container">
+                  <input type="text" placeholder="Type role name..." formControlName="roleSearch" 
+                    (focus)="showDropdown = true" (input)="filterRoles($event.target.value)"
+                    maxlength="50"
+  (keydown)="preventInvalidNameInput($event, 'roleSearch')"
+  (paste)="onNamePaste($event, 'roleSearch')"
+                    class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+
+                  <!-- Constrained dropdown -->
+                  <ul *ngIf="showDropdown && filteredRoles.length"
+                    class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto z-50">
+                    <li *ngFor="let r of filteredRoles" (click)="selectRole(r)"
+                      class="px-3 py-2 hover:bg-indigo-100 cursor-pointer">
+                      {{ r.name }}
+                    </li>
+                  </ul>
+                </div>
+
+
+              </th>
+
+              <th class="p-2">
+                <select formControlName="isActive"
+                  class="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                  <option [ngValue]="">All</option>
+                  <option [ngValue]="true">Active</option>
+                  <option [ngValue]="false">Inactive</option>
+                </select>
+              </th>
+
+              <th class="p-2">
+                <button type="button" class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 transition cursor-pointer"
+                  (click)="clearFilters()">
+                  Clear
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let u of paged?.items" class="border-b border-gray-200 hover:bg-gray-50 transition">
+              <td class="p-2">{{ u.name }}</td>
+              <td class="p-2">{{ u.email }}</td>
+              <td class="p-2">{{ u.phoneNumber }}</td>
+              <td class="p-2">{{ u.role }}</td>
+              <td class="p-2">
+                <label class="switch">
+                  <input type="checkbox" [checked]="u.isActive" (change)="toggleStatus(u)" />
+                  <span class="slider round"></span>
+                </label>
+              </td>
+<td class="p-2 flex gap-2">
+  <!-- If it's the current user -->
+  <ng-container *ngIf="u.id === currentUserId; else actionButtons">
+    <span class="text-gray-400 text-sm italic">(You)</span>
+  </ng-container>
+
+  <!-- Main buttons / locked message -->
+  <ng-template #actionButtons>
+    <!-- If target is SuperAdmin and current user is not -->
+    <ng-container *ngIf="u.role === 'SuperAdmin' && currentUserRole !== 'SuperAdmin'; else normalActions">
+      <span class="text-gray-400 text-sm italic">Don't have permission to change</span>
+    </ng-container>
+
+    <!-- Otherwise show edit/delete -->
+    <ng-template #normalActions>
+      <button
+        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm cursor-pointer"
+        (click)="edit(u.id)"
+        *hasPermission="'Users.Edit'"
+      >
+        Edit
+      </button>
+      <button
+        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm cursor-pointer"
+        (click)="confirmDelete(u.id, u.name)"
+        *hasPermission="'Users.Delete'"
+      >
+        Delete
+      </button>
+    </ng-template>
+  </ng-template>
+</td>
+
+
+            </tr>
+
+            <tr *ngIf="!paged?.items?.length">
+              <td colspan="6" class="text-center text-gray-500 py-3">No users found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+
+    <!-- Pagination Controls -->
+   <div class="flex flex-wrap items-center justify-between mt-6 gap-3 text-gray-700">
+
+  <!-- LEFT SIDE -->
+  <div class="flex items-center gap-2">
+    <button [disabled]="pageNumber <= 1"
+      (click)="changePage(pageNumber - 1)"
+      class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed">
+      ◀ Prev
+    </button>
+
+    <span class="text-sm">
+      Page <strong>{{ pageNumber }}</strong> of <strong>{{ TotalPages }}</strong>
+    </span>
+
+    <button [disabled]="(pageNumber * pageSize) >= (paged?.totalCount ?? 0) || loading"
+      (click)="changePage(pageNumber + 1)"
+      class="px-3 py-1 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed transition disabled:opacity-50">
+      Next ▶
+    </button>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="flex items-center gap-3">
+    <label class="text-sm text-gray-600">Rows per page:</label>
+
+    <select
+      [value]="pageSize"
+      (change)="changePageSize($any($event.target).value)"
+      class="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500 text-sm">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="25">25</option>
+      <option [value]="50">50</option>
+    </select>
+
+    <span class="text-sm text-gray-600">
+      Total: <strong>{{ paged?.totalCount ?? 0 }}</strong>
+    </span>
+  </div>
+
+</div>
+
+  
+    <div *ngIf="loading" class="mt-2 text-gray-500">Loading…</div>
+  </div>
+</div>

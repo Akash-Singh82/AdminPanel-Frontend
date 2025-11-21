@@ -1,0 +1,217 @@
+<div class="card p-6 bg-white shadow-sm rounded-lg border border-gray-200">
+  <h2 class="text-2xl font-semibold mb-6 text-gray-800">Add CMS Page</h2>
+
+  <form [formGroup]="form"   (keydown.enter)="onEnterPress($event)"
+ (ngSubmit)="submit()" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Key -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Key <span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          formControlName="key" 
+          placeholder="Unique key..." 
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'key')" 
+          (paste)="onPaste($event, 'key')"
+          (input)="removeLeadingSpacesIfNeeded('key')"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none placeholder-gray-400 transition"
+        />
+        <div class="mt-1.5 text-sm text-red-600" *ngIf="form.get('key')?.touched || form.get('key')?.dirty">
+          <small class="block" *ngIf="form.get('key')?.errors?.['required']">Key is required.</small>
+          <small class="block" *ngIf="form.get('key')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required .
+          </small>
+          <small class="block" *ngIf="form.get('key')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+          <small class="block" *ngIf="form.get('key')?.errors?.['pattern']">
+            Only alphabets, numbers, underscores, and dashes allowed.
+          </small>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Title <span class="text-red-500">*</span>
+        </label>
+        <input
+          formControlName="title"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none placeholder-gray-400 transition"
+          placeholder="Enter CMS title"
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'title')"
+          (paste)="onPaste($event, 'title')"
+          (input)="removeLeadingSpacesIfNeeded('title')"
+        />
+        <div class="mt-1.5 text-sm text-red-600" *ngIf="form.get('title')?.touched || form.get('title')?.dirty">
+          <small class="block" *ngIf="form.get('title')?.errors?.['required']">Title is required.</small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['pattern']">Only alphabets and spaces allowed.</small>
+        </div>
+      </div>
+
+      <!-- Meta Keyword -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Meta Keyword <span class="text-red-500">*</span>
+        </label>
+        <input
+          formControlName="metaKeyword"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none placeholder-gray-400 transition"
+          placeholder="Enter meta keywords"
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'metaKeyword')"
+          (paste)="onPaste($event, 'metaKeyword')"
+          (input)="removeLeadingSpacesIfNeeded('metaKeyword')"
+        />
+        <div class="mt-1.5 text-sm text-red-600" *ngIf="form.get('metaKeyword')?.touched || form.get('metaKeyword')?.dirty">
+          <small class="block" *ngIf="form.get('metaKeyword')?.errors?.['required']">Meta Keyword is required.</small>
+          <small class="block" *ngIf="form.get('metaKeyword')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('metaKeyword')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+          <small class="block" *ngIf="form.get('metaKeyword')?.errors?.['pattern']">Only alphabets and spaces allowed.</small>
+        </div>
+      </div>
+
+      <!-- Meta Title -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Meta Title <span class="text-red-500">*</span>
+        </label>
+        <input
+          formControlName="metaTitle"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none placeholder-gray-400 transition"
+          placeholder="Enter meta title"
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'metaTitle')"
+          (paste)="onPaste($event, 'metaTitle')"
+          (input)="removeLeadingSpacesIfNeeded('metaTitle')"
+        />
+        <div class="mt-1.5 text-sm text-red-600" *ngIf="form.get('metaTitle')?.touched || form.get('metaTitle')?.dirty">
+          <small class="block" *ngIf="form.get('metaTitle')?.errors?.['required']">Meta Title is required.</small>
+          <small class="block" *ngIf="form.get('metaTitle')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('metaTitle')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+          <small class="block" *ngIf="form.get('metaTitle')?.errors?.['pattern']">Only alphabets and spaces allowed.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta Description -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Meta Description <span class="text-red-500">*</span>
+      </label>
+      <textarea
+        formControlName="metaDescription"
+        rows="3"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none placeholder-gray-400 transition resize-none"
+        placeholder="Enter meta description"
+        maxlength="100"
+        (keydown)="preventInvalidInput($event, 'metaDescription')" 
+        (paste)="onPaste($event, 'metaDescription')"
+        (input)="removeLeadingSpacesIfNeeded('metaDescription')"
+      ></textarea>
+      <div class="mt-1.5 text-sm text-red-600" *ngIf="form.get('metaDescription')?.touched || form.get('metaDescription')?.dirty">
+        <small class="block" *ngIf="form.get('metaDescription')?.errors?.['required']">Meta Description is required.</small>
+        <small class="block" *ngIf="form.get('metaDescription')?.errors?.['trimmedMinLength']">
+          Minimum 2 non-space characters required.
+        </small>
+        <small class="block" *ngIf="form.get('metaDescription')?.errors?.['maxlength']">Maximum 100 characters allowed.</small>
+        <small class="block" *ngIf="form.get('metaDescription')?.errors?.['pattern']">Only alphabets and spaces allowed.</small>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Status <span class="text-red-500">*</span>
+        </label>
+        <select 
+          formControlName="isActive" 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-white transition"
+        >
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="col-span-2 ">
+  <label class="block font-medium mb-1">Content<span class="text-red-500">*</span></label>
+  <ckeditor [editor]="Editor" formControlName="content" [config]="{
+      placeholder: 'Type or paste your content here!',
+      toolbar: [
+        'heading', '|',
+        'bold', 'italic', 'underline', 'link',
+        'bulletedList', 'numberedList', '|',
+        'insertTable','blockQuote','undo','redo','imageUpload'
+      ]
+    }"
+      maxlength="100"
+      (keydown)="preventInvalidInput($event, 'content')"
+(paste)="onPaste($event, 'content')"
+(input)="removeLeadingSpacesIfNeeded('content')" class="border border-gray-300 rounded "
+    ></ckeditor>
+    <div class="email-errors text-sm text-red-500"
+      *ngIf=" form.get('content')?.touched  || form.get('content')?.dirty ">
+
+      <small class="block" *ngIf="form.get('content')?.errors?.['required']">Content is required.</small>
+        <small class="block" *ngIf="form.get('content')?.errors?.['trimmedMinLength']">
+Minimum 2 non-space characters required.
+</small>
+      <small class="block" *ngIf="form.get('content')?.errors?.['maxlength']">Maximum 100 characters allowed.</small>
+      <!-- <small class="block" *ngIf="form.get('content')?.errors?.['pattern']">Only alphabets and spaces allowed.</small> -->
+    </div>
+</div>
+
+    <!-- Buttons -->
+    <div class="flex gap-3 pt-2">
+      <button
+        type="submit"
+        [disabled]="submitting"
+        class="px-8 py-3 bg-gray-200 text-gray-900 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        Add cms
+      </button>
+
+      <button
+        type="button"
+        (click)="cancel()"
+        class="px-6 py-2.5 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

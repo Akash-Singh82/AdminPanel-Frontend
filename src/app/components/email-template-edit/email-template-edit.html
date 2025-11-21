@@ -1,0 +1,189 @@
+<div class="bg-white p-8 max-w-7xl mx-auto" *ngIf="!loading; else loadingTpl">
+  <h2 class="text-3xl font-bold mb-8 text-gray-900">Edit Email Template</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" (keydown.enter)="onEnterPress($event)">
+    <!-- First Row: Key and Title -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- Key (Read-only) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Key<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          formControlName="key" 
+          readonly
+          class="w-full border border-gray-300 rounded-md px-4 py-3 bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none" />
+      </div>
+
+      <!-- Title -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Title<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          formControlName="title" 
+          placeholder="Title*" 
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'title')" 
+          (paste)="onPaste($event, 'title')"
+          (input)="removeLeadingSpacesIfNeeded('title')"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('title')?.touched || form.get('title')?.dirty">
+          <small class="block" *ngIf="form.get('title')?.errors?.['required']">Title is required.</small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+          <small class="block" *ngIf="form.get('title')?.errors?.['pattern']">Only alphabets and spaces allowed.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Row: Subject and From Email -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- Subject -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Subject<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          formControlName="subject" 
+          placeholder="Subject*" 
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'subject')" 
+          (paste)="onPaste($event, 'subject')"
+          (input)="removeLeadingSpacesIfNeeded('subject')"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('subject')?.touched || form.get('subject')?.dirty">
+          <small class="block" *ngIf="form.get('subject')?.errors?.['required']">Subject is required.</small>
+          <small class="block" *ngIf="form.get('subject')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('subject')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+        </div>
+      </div>
+
+      <!-- From Email -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          From Email<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="email" 
+          formControlName="fromEmail" 
+          placeholder="From Email*" 
+          maxlength="50"
+          (keydown)="preventSpaceInEmail_($event)" 
+          (paste)="onPasteEmail_($event)"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('fromEmail')?.touched || form.get('fromEmail')?.dirty">
+          <small class="block" *ngIf="form.get('fromEmail')?.errors?.['required']">From email is required.</small>
+          <small class="block" *ngIf="form.get('fromEmail')?.errors?.['email']">Invalid email address.</small>
+          <small class="block" *ngIf="form.get('fromEmail')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Third Row: From Name and Status -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- From Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          From Name<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          formControlName="fromName" 
+          placeholder="From Name*" 
+          maxlength="50"
+          (keydown)="preventInvalidInput($event, 'fromName')" 
+          (paste)="onPaste($event, 'fromName')"
+          (input)="removeLeadingSpacesIfNeeded('fromName')"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('fromName')?.touched || form.get('fromName')?.dirty">
+          <small class="block" *ngIf="form.get('fromName')?.errors?.['required']">From name is required.</small>
+          <small class="block" *ngIf="form.get('fromName')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('fromName')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Status<span class="text-red-500">*</span>
+        </label>
+        <select 
+          formControlName="isActive"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Body Section -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Body<span class="text-red-500">*</span>
+      </label>
+
+      <div class="border border-gray-300 rounded-md overflow-hidden">
+        <ckeditor 
+          [editor]="Editor" 
+          formControlName="body" 
+          [config]="{
+            placeholder: 'Type or paste your content here!',
+            toolbar: [
+              'heading', '|',
+              'bold', 'italic', 'underline', 'link',
+              'bulletedList', 'numberedList', '|',
+              'insertTable','blockQuote','undo','redo','imageUpload'
+            ]
+          }" 
+          (keydown)="preventInvalidInput($event, 'body')" 
+          (paste)="onPaste($event, 'body')"
+          (input)="removeLeadingSpacesIfNeeded('body')"
+          class="w-full min-h-[400px]">
+        </ckeditor>
+      </div>
+
+      <div class="text-red-600 text-xs mt-1" *ngIf="form.get('body')?.touched || form.get('body')?.dirty">
+        <small class="block" *ngIf="form.get('body')?.errors?.['required']">Body is required.</small>
+        <small class="block" *ngIf="form.get('body')?.errors?.['trimmedMinLength']">
+          Minimum 2 non-space characters required.
+        </small>
+        <small class="block" *ngIf="form.get('body')?.errors?.['maxlength']">Maximum 100 characters allowed.</small>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200">
+      <button 
+        type="submit" 
+        [disabled]="submitting"
+        class="px-8 py-3 bg-gray-200 text-gray-900 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        {{ submitting ? 'Saving...' : 'Save Changes' }}
+      </button>
+
+      <button 
+        type="button" 
+        (click)="CancelCommand()"
+        class="px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="flex items-center justify-center py-12">
+    <div class="text-center">
+      <div class="text-gray-600 text-lg">Loading template...</div>
+    </div>
+  </div>
+</ng-template>

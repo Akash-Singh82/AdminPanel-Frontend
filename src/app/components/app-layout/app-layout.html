@@ -1,0 +1,132 @@
+<div class="min-h-screen flex bg-gray-100">
+  <!-- Sidebar -->
+  <aside [class.w-20]="collapsed" [class.w-64]="!collapsed" class="transition-all duration-200 bg-indigo-700 text-white flex-shrink-0">
+    <div class="p-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- <img src="/assets/logo.png" alt="logo" class="w-8 h-8"/> -->
+        <span *ngIf="!collapsed" class="font-semibold">Admin Panel</span>
+      </div>
+      <!-- collapse button (hidden small screens) -->
+      <!-- <button (click)="toggleCollapse()" class="hidden md:inline-flex items-center justify-center p-1 rounded hover:bg-indigo-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button> -->
+
+      
+<button (click)="toggleCollapse()" class="hidden md:inline-flex items-center justify-center p-1 rounded hover:bg-indigo-600">
+  <ng-container *ngIf="collapsed; else closeIcon">
+    <!-- Hamburger Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/>
+    </svg>
+  </ng-container>
+  <ng-template #closeIcon>
+    <!-- Close Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </ng-template>
+</button>
+
+    </div>
+
+    <!-- profile block at top of sidebar -->
+    <div class="px-3 py-4 flex items-center gap-3 border-t border-b border-indigo-600">
+      <img [src]="profile?.imageUrl || '/assets/default-avatar.png'" alt="avatar"
+           class="w-12 h-12 rounded-full object-cover" />
+      <div *ngIf="!collapsed" class="leading-none">
+        <div class="font-medium">{{ profile?.firstName || 'User' }}</div>
+        <div class="text-xs text-indigo-200">{{profile?.roleName || 'role'}}</div>
+      </div>
+    </div>
+
+    <!-- nav -->
+    <nav class="mt-4 px-1 space-y-1">
+      <a routerLink="/dashboard" routerLinkActive="bg-indigo-600" [routerLinkActiveOptions]="{exact:true}"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" >
+        <span class="w-6 flex justify-center">
+          <!-- home icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3.172L3 8v7a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1V8l-7-4.828z" /></svg>
+        </span>
+        <span *ngIf="!collapsed">Dashboard</span>
+      </a>
+
+      <a routerLink="/users" routerLinkActive="bg-indigo-600" [routerLinkActiveOptions]="{exact:false}"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" *hasPermission="'Users.List'">
+        <span class="w-6 flex justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 7a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2 17a6 6 0 1112 0H2z"/></svg>
+        </span>
+        <span *ngIf="!collapsed">Users</span>
+      </a>
+
+      <a routerLink="/roles" routerLinkActive="bg-indigo-600" [routerLinkActiveOptions]="{exact:false}"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" *hasPermission="'Roles.List'">
+        <span class="w-6 flex justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a2 2 0 00-2 2v2h12V4a2 2 0 00-2-2H6z"/><path d="M4 10v6a2 2 0 002 2h8a2 2 0 002-2v-6H4z"/></svg>
+        </span>
+        <span *ngIf="!collapsed">Roles</span>
+      </a>
+
+      <a routerLink="/email-templates" routerLinkActive="bg-indigo-600" [routerLinkActiveOptions]="{exact:false}"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" *hasPermission="'EmailTemplates.List'">
+        <span class="w-6 flex justify-center">✉️</span>
+        <span *ngIf="!collapsed">Email Templates</span>
+      </a>
+
+      <a routerLink="/cms" routerLinkActive="bg-indigo-600" [routerLinkActiveOptions]="{exact:false}"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" *hasPermission="'CMS.List'">
+        <span class="w-6 flex justify-center">📄</span>
+        <span *ngIf="!collapsed">CMS</span>
+      </a>
+
+      <a routerLink="/audit-logs" routerLinkActive="bg-indigo-600"
+         class="group flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-600" *hasPermission="'AuditLogs.List'">
+        <span class="w-6 flex justify-center">🕘</span>
+        <span *ngIf="!collapsed">Audit Logs</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <!-- Main -->
+<div class="flex-1 flex flex-col min-h-screen">
+  <!-- topbar -->
+  <header class="flex items-center justify-between p-3 border-b bg-white">
+    <div class="flex items-center gap-3">
+      <!-- small screen collapse button -->
+      <button (click)="toggleCollapse()" class="md:hidden p-2 rounded hover:bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-4 border border-gray-300 rounded-lg px-3 py-2 bg-white shadow-sm">
+    <div class="flex items-center gap-4">
+      <div class="relative ">
+        <button (click)="toggleProfile($event)" class="profile-toggle flex items-center gap-2 cursor-pointer border-2px border-gray-300 rounded-full px-2 py-1 hover:bg-gray-100">
+          <img [src]="profile?.imageUrl || '/assets/default-avatar.png'" class="w-8 h-8 rounded-full object-cover"/>
+          <span class="hidden sm:inline text-sm">{{ profile?.firstName || 'User' }}</span>
+        </button>
+
+        <div *ngIf="profileOpen" class="profile-dropdown absolute right-0 mt-3 w-44 bg-white border rounded shadow">
+          <a (click)="toggleProfile($event)" routerLink="/profile" class="block px-3 py-2 hover:bg-gray-50">Profile</a>
+          <button (click)="logout()" class="w-full text-left px-3 py-2 hover:bg-gray-50">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </header>
+
+  <!-- page content -->
+  <main class="flex-1 p-6">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-200 text-gray-700 py-3 px-6 flex justify-between items-center text-sm mt-auto">
+    <span>Powered by <u>Admin</u></span>
+    <span><u>Admin</u> © 2025</span>
+  </footer>
+</div>
+
+</div>

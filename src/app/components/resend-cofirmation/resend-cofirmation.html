@@ -1,0 +1,10 @@
+<div class="container mt-4">
+  <h2>Resend confirmation</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div>
+      <label>Email</label>
+      <input formControlName="email" type="email" />
+    </div>
+    <button type="submit" [disabled]="submitting">Send confirmation</button>
+  </form>
+</div>

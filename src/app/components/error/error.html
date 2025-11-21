@@ -1,0 +1,57 @@
+<!-- <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+  <div class="max-w-md w-full bg-white shadow-lg rounded-2xl p-8 border border-gray-200 text-center">
+    <div class="flex justify-center mb-4">
+      <div class="bg-red-100 text-red-600 rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856C19.07 19 20 18.07 20 16.938V7.062C20 5.93 19.07 5 17.938 5H6.062C4.93 5 4 5.93 4 7.062v9.876C4 18.07 4.93 19 6.062 19z" />
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+      {{ code ? 'Error ' + code : 'Unexpected Error' }}
+    </h2>
+    <p class="text-gray-600 mb-6">
+      {{ message || 'Something went wrong. Please try again later.' }}
+    </p>
+
+    <button
+      (click)="goHome()"
+      class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 shadow-md"
+    >
+      Go to Login
+    </button>
+  </div>
+
+</div> -->
+
+
+
+<div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+  <div class="max-w-md w-full bg-white shadow-lg rounded-2xl p-8 border border-gray-200 text-center">
+    <div class="flex justify-center mb-4">
+      <div class="bg-red-100 text-red-600 rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856C19.07 19 20 18.07 20 16.938V7.062C20 5.93 19.07 5 17.938 5H6.062C4.93 5 4 5.93 4 7.062v9.876C4 18.07 4.93 19 6.062 19z" />
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+      {{ code ? 'Error ' + code : 'Unexpected Error' }}
+    </h2>
+    <p class="text-gray-600 mb-6">
+      {{ message || 'Something went wrong. Please try again later.' }}
+    </p>
+
+    <button
+      (click)="goBack()"
+      class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 shadow-md"
+    >
+      {{ isLoggedIn ? 'Continue' : 'Go to Login' }}
+    </button>
+  </div>
+</div>
+

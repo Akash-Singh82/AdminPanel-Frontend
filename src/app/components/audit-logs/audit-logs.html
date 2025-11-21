@@ -1,0 +1,248 @@
+<div>
+  <!-- Loading overlay -->
+  <div *ngIf="loading" class="absolute inset-0 z-40 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="bg-white/80 p-6 rounded-lg shadow-lg flex flex-col items-center gap-3">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <div class="text-gray-700 font-medium">Loading…</div>
+    </div>
+  </div>
+
+  <div class="card p-6 bg-white shadow rounded-lg border border-gray-200" *ngIf="!loading; else loadingTpl">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-800">Audit Logs</h2>
+      <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition" (click)="exportCsv()"
+        *hasPermission="'AuditLogs.List'"
+        class="px-4 py-2 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-200 transition cursor-pointer">
+        Export CSV
+      </button>
+    </div>
+
+    <form [formGroup]="filtersForm" (keydown.enter)="$event.preventDefault(); onSearch()" novalidate>
+      <div class="overflow-x-auto border border-gray-300 rounded-lg">
+        <table class="w-full table-auto border-collapse">
+          <thead class="bg-gray-50">
+            <tr class="text-left text-gray-700 border-b border-gray-300">
+              <th class="p-4 font-semibold text-sm cursor-pointer select-none hover:text-indigo-600"
+                  (click)="sortBy('userName')">
+                <div class="flex items-center gap-1">
+                  User Name
+                  <span *ngIf="sortField === 'userName'">
+                    <span *ngIf="sortDirection === 'asc'" class="text-xs">▲</span>
+                    <span *ngIf="sortDirection === 'desc'" class="text-xs">▼</span>
+                  </span>
+                  <span *ngIf="sortField !== 'userName'" class="text-gray-300 text-xs">▲</span>
+                </div>
+              </th>
+
+              <th class="p-4 font-semibold text-sm cursor-pointer select-none hover:text-indigo-600"
+                  (click)="sortBy('type')">
+                <div class="flex items-center gap-1">
+                  Type
+                  <span *ngIf="sortField === 'type'">
+                    <span *ngIf="sortDirection === 'asc'" class="text-xs">▲</span>
+                    <span *ngIf="sortDirection === 'desc'" class="text-xs">▼</span>
+                  </span>
+                  <span *ngIf="sortField !== 'type'" class="text-gray-300 text-xs">▲</span>
+                </div>
+              </th>
+
+              <th class="p-4 font-semibold text-sm cursor-pointer select-none hover:text-indigo-600"
+                  (click)="sortBy('activity')">
+                <div class="flex items-center gap-1">
+                  Activity
+                  <span *ngIf="sortField === 'activity'">
+                    <span *ngIf="sortDirection === 'asc'" class="text-xs">▲</span>
+                    <span *ngIf="sortDirection === 'desc'" class="text-xs">▼</span>
+                  </span>
+                  <span *ngIf="sortField !== 'activity'" class="text-gray-300 text-xs">▲</span>
+                </div>
+              </th>
+
+              <th class="p-4 font-semibold text-sm cursor-pointer select-none hover:text-indigo-600"
+                  (click)="sortBy('timestamp')">
+                <div class="flex items-center gap-1">
+                  Timestamp
+                  <span *ngIf="sortField === 'timestamp'">
+                    <span *ngIf="sortDirection === 'asc'" class="text-xs">▲</span>
+                    <span *ngIf="sortDirection === 'desc'" class="text-xs">▼</span>
+                  </span>
+                  <span *ngIf="sortField !== 'timestamp'" class="text-gray-300 text-xs">▲</span>
+                </div>
+              </th>
+
+              <th class="p-4 font-semibold text-sm text-center">Action</th>
+            </tr>
+
+            <tr class="border-b border-gray-300 bg-white">
+              <th class="p-3">
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    placeholder="Search" 
+                    formControlName="userName"
+                    maxlength="50"
+                    (keydown)="preventInvalidNameInput($event, 'userName')"
+                    (paste)="onNamePaste($event, 'userName')"
+                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none text-sm placeholder-gray-400" 
+                  />
+                </div>
+              </th>
+              <th class="p-3">
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    placeholder="Search" 
+                    formControlName="type"
+                    maxlength="50"
+                    (keydown)="preventInvalidNameInput($event, 'type')"
+                    (paste)="onNamePaste($event, 'type')"
+                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none text-sm placeholder-gray-400" 
+                  />
+                </div>
+              </th>
+              <th class="p-3">
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    placeholder="Search" 
+                    formControlName="activity"
+                    maxlength="50"
+                    (keydown)="preventInvalidNameInput($event, 'activity')"
+                    (paste)="onNamePaste($event, 'activity')"
+                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none text-sm placeholder-gray-400" 
+                  />
+                </div>
+              </th>
+              <th class="p-3" colspan="2">
+                <div class="flex items-center gap-3">
+                  <!-- From Date -->
+                  <mat-form-field appearance="outline" class="flex-1 ">
+                    <!-- <mat-label>Date Range</mat-label> -->
+                    <input 
+                      matInput 
+                      [matDatepicker]="fromPicker"
+                      formControlName="fromDate"
+                      placeholder="From (YYYY-MM-DD)"
+                      [min]="minDate"
+                      [max]="maxDate"
+                      readonly
+                      (click)="fromPicker.open()"
+                    />
+                    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #fromPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <span class="text-gray-400 font-medium self-center shrink-0">to</span>
+
+                  <!-- To Date -->
+                  <mat-form-field appearance="outline" class="flex-1 date-field-compact">
+                    <input
+                      matInput
+                      [matDatepicker]="toPicker"
+                      formControlName="toDate"
+                      placeholder="To (YYYY-MM-DD)"
+                      [min]="minDate"
+                      [max]="maxDate"
+                      readonly
+                      (click)="toPicker.open()"
+                    />
+                    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #toPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Clear button -->
+                  <!-- <button 
+                    type="button" 
+                    (click)="clearFilters()"
+                    class="shrink-0 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                    title="Clear filters"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    clear
+                  </button> -->
+                                <button type="button" class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 transition cursor-pointer"
+                (click)="clearFilters()">
+                Clear
+              </button>
+                </div>
+
+                <!-- Validation messages -->
+                <div class="mt-1 text-xs text-red-600 space-y-1" *ngIf="filtersForm.errors as e">
+                  <div *ngIf="e['invalidRange']">⚠️ From Date cannot be later than To Date.</div>
+                  <div *ngIf="e['outOfRange']">⚠️ Date must be between 1900 and 2100.</div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let log of logs" class="border-b border-gray-200 hover:bg-gray-50 transition">
+              <td class="p-4 text-sm text-gray-700">{{ log.userName }}</td>
+              <td class="p-4 text-sm text-gray-700">{{ log.type }}</td>
+              <td class="p-4 text-sm text-gray-700">{{ log.activity }}</td>
+              <td class="p-4 text-sm text-gray-700">{{ log.timestamp | date: 'yyyy-MM-dd hh:mm:ss a' }}
+</td>
+              <td class="p-4"></td>
+              
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+    <div *ngIf="!loading && logs.length === 0" class="text-center py-8 text-gray-500">
+      No records found
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-wrap items-center justify-between mt-6 gap-3 text-gray-700">
+      <div class="flex items-center gap-2">
+        <button [disabled]="page <= 1" (click)="changePage(page - 1)"
+          class="px-3 py-1 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed ">
+          ◀ Prev
+        </button>
+
+        <span class="text-sm">
+          Page <strong>{{ page }}</strong> of <strong>{{TotalPages}}</strong>
+        </span>
+
+        <button [disabled]="(page * pageSize) >= total" (click)="changePage(page + 1)"
+          class="px-3 py-1 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          Next ▶
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label for="pageSize" class="text-sm text-gray-600">Rows per page:</label>
+        <select id="pageSize" [value]="pageSize" (change)="changePageSize($any($event.target).value)"
+          class="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm">
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+
+        <span class="text-sm text-gray-600">
+          Total Records: <strong>{{ total }}</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="text-center py-6 text-gray-600">Loading audit logs...</div>
+  </ng-template>
+</div>

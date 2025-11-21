@@ -1,0 +1,139 @@
+<div class="bg-white p-8 max-w-7xl mx-auto">
+  <h2 class="text-3xl font-bold mb-8 text-gray-900">
+    {{ id ? 'Edit Role' : 'Add Role' }}
+  </h2>
+
+  <form [formGroup]="form" (keydown.enter)="onEnterPress($event)" (ngSubmit)="save()" class="space-y-6">
+
+    <!-- Basic Info -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Role Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Role Name<span class="text-red-500">*</span>
+        </label>
+        <input 
+          formControlName="name" 
+          placeholder="Role Name*"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+          maxlength="50"
+          (keydown)="preventInvalidNameInput($event, 'name')"
+          (paste)="onNamePaste($event, 'name')" />
+
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('name')?.touched || form.get('name')?.dirty">
+          <small class="block" *ngIf="form.get('name')?.errors?.['required']">Role name is required.</small>
+          <small class="block" *ngIf="form.get('name')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('name')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Description<span class="text-red-500">*</span>
+        </label>
+        <input 
+          formControlName="description" 
+          placeholder="Short Description*"
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+          maxlength="50"
+          (keydown)="preventInvalidNameInput($event, 'description')"
+          (paste)="onNamePaste($event, 'description')"/>
+          
+        <div class="text-red-600 text-xs mt-1" *ngIf="form.get('description')?.touched || form.get('description')?.dirty">
+          <small class="block" *ngIf="form.get('description')?.errors?.['required']">Description is required.</small>
+          <small class="block" *ngIf="form.get('description')?.errors?.['trimmedMinLength']">
+            Minimum 2 non-space characters required.
+          </small>
+          <small class="block" *ngIf="form.get('description')?.errors?.['maxlength']">Maximum 50 characters allowed.</small>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Status<span class="text-red-500">*</span>
+        </label>
+        <select 
+          formControlName="isActive" 
+          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4 mt-6">
+      <button 
+        type="button" 
+        class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
+        (click)="toggleCheckAll()">
+        {{ permissions.length && checkedIds.size === permissions.length ? 'Uncheck All' : 'Check All' }}
+      </button>
+      
+      <button 
+        type="button" 
+        class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
+        (click)="toggleExpandAll()">
+        {{ expandAllMode ? 'Collapse All' : 'Expand All' }}
+      </button>
+    </div>
+
+    <!-- Permissions -->
+    <h3 class="text-2xl font-bold mt-8 mb-4 text-gray-900">
+      Permissions<span class="text-red-500">*</span>
+    </h3>
+    
+    <div *ngIf="(checkedIds.size === 0 && (form.touched || form.dirty))|| noPermission" class="text-red-600 text-sm mb-3">
+      At least one permission must be selected.
+    </div>
+
+    <div class="space-y-3">
+      <div *ngFor="let g of groups" class="border border-gray-300 rounded-lg overflow-hidden">
+        <div class="flex justify-between items-center bg-gray-50 px-5 py-4 cursor-pointer hover:bg-gray-100 transition-colors"
+             (click)="g.expanded = !g.expanded">
+          <div class="flex items-center gap-3">
+            <button type="button" class="text-gray-600 text-lg">
+              <span [innerHTML]="g.expanded ? '&#9660;' : '&#9658;'"></span>
+            </button>
+            <strong class="text-base font-semibold text-gray-900">{{ g.groupName }}</strong>
+          </div>
+        </div>
+
+        <div *ngIf="g.expanded" class="bg-white px-5 py-4">
+          <div *ngFor="let p of g.permissions" class="flex items-start justify-between py-3 border-b border-gray-100 last:border-b-0">
+            <label class="flex items-center gap-3 cursor-pointer flex-1">
+              <input 
+                type="checkbox" 
+                [checked]="isChecked(p.id)" 
+                (change)="togglePermission(p.id)"
+                class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer" />
+              <span class="text-sm text-gray-900">{{ p.name.split('.').slice(1).join('.') || p.name }}</span>
+            </label>
+            <div class="text-xs text-gray-500 ml-4 max-w-md">{{ p.description }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200">
+      <button 
+        type="submit" 
+        [disabled]="saving"
+        class="px-8 py-3 bg-gray-200 text-gray-900 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        Save
+      </button>
+      <button 
+        type="button" 
+        class="px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
+        (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+</div>
