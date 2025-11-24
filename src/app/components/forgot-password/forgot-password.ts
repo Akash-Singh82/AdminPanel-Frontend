@@ -68,6 +68,7 @@ onPasteEmail(event: ClipboardEvent) {
       },
       error: (err) => {
         this.loading = false;
+       
         this.error = err?.error?.message ?? 'Something went wrong. Please try again.';
       },
     });
