@@ -35,7 +35,7 @@ import { ResetPassword } from './components/reset-password/reset-password';
 
 export const routes: Routes = [
   // -------------------------------
-  // 🔓 Public routes (no auth)
+  //  Public routes (no auth)
   // -------------------------------
 
   { path: 'account/forgot-password', component: ForgotPassword },
@@ -54,7 +54,7 @@ export const routes: Routes = [
   { path: 'unauthorized', component: Unauthorized },
 
   // -------------------------------
-  // 🔐 Protected routes (inside layout)
+  //  Protected routes (inside layout)
   // -------------------------------
   {
     path: '',
