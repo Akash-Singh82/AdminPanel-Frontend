@@ -201,6 +201,7 @@ removeLeadingSpacesIfNeeded(controlName: string) {
   onEnterPress(event: Event) {
   const e = event as KeyboardEvent;
   e.preventDefault();
+  // You can trigger form submission or any other action here
 }
 
 }
